@@ -12,7 +12,7 @@ const ConfirmPayment = ({ getPayment, match, payment: { payment } }) => {
         getPayment(id);
     }, []);
 
-    const initiatePayment = () => {
+    const initiatePayment = async () => {
         const orderId = payment.order_id;
         const merchantId = process.env.REACT_APP_MERCHANT_ID;
         const serviceId = process.env.REACT_APP_SERVICE_ID;
@@ -59,11 +59,9 @@ const ConfirmPayment = ({ getPayment, match, payment: { payment } }) => {
         };
 
         try {
-            axios.post(
-                'https://pilot.surepay.ndml.in/SurePayPayment/sp/processRequest',
-                data,
-                config
-            );
+            const res = await axios.post('/api/payment', data, config);
+
+            console.log(res);
         } catch (err) {
             console.log(err);
         }

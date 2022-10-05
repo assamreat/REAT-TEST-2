@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const axios = require('axios');
+
 // Models
 const Payment = require('../../models/Payment');
 const AppealState = require('../../models/AppealState');
@@ -8,28 +10,30 @@ const AppealState = require('../../models/AppealState');
 // Middleware
 const auth = require('../../middleware/auth');
 
-router.post('/:id/payment', auth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
-        const payment = Payment.build({
-            status: 0,
-            appealId: req.params.id,
-        });
+        const data = req.body;
 
-        await payment.save();
-
-        await AppealState.update(
-            {
-                appellant: 0,
-                receptionist: 1,
-                registrar: 0,
-                bench: 0,
-            },
-            {
-                where: { appealId: req.params.id },
-            }
+        const resposne = await axios.post(
+            'https://pilot.surepay.ndml.in/SurePayPayment/sp/processRequest',
+            data
         );
 
-        res.json(payment);
+        res.json(resposne.data);
+
+        // await AppealState.update(
+        //     {
+        //         appellant: 0,
+        //         receptionist: 1,
+        //         registrar: 0,
+        //         bench: 0,
+        //     },
+        //     {
+        //         where: { appealId: req.params.id },
+        //     }
+        // );
+
+        // res.json(payment);
     } catch (err) {
         console.log(err);
         res.status(500).send('SERVER ERROR');
@@ -39,11 +43,12 @@ router.post('/:id/payment', auth, async (req, res) => {
 // @route GET api/appellant/appeals/:id/payment
 // @desc  Get order_id
 // @access Private
-router.get('/:id/payment', auth, async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const payment = await Payment.findOne({
             where: { appealId: req.params.id },
         });
+
         res.json(payment);
     } catch (err) {
         console.log(err);
