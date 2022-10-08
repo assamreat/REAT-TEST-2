@@ -13,15 +13,37 @@ const ConfirmPayment = ({ getPayment, match, payment: { payment } }) => {
     }, []);
 
     const initiatePayment = async () => {
-        const orderId = payment.order_id;
+        const messageType = '0100';
         const merchantId = process.env.REACT_APP_MERCHANT_ID;
         const serviceId = process.env.REACT_APP_SERVICE_ID;
+        const orderId = payment.order_id;
+        const customerId = '1000001';
+        const transactionAmount = 1000.0;
+        const currencyCode = 'INR';
         const secretKey = process.env.REACT_APP_NSDL_KEY;
-        const requestDateTime = payment.createdAt;
         const successUrl = 'http://test.areatappeal.in/paymentSuccess';
         const failUrl = 'http://test.areatappeal.in/paymentFail';
+        const additionalField1 = 'example@gmail.com';
+        const additionalField2 = 'example@gmail.com';
+        const additionalField3 = 'example@gmail.com';
+        const additionalField4 = 'example@gmail.com';
+        const additionalField5 = 'example@gmail.com';
 
-        const message = `0100|${merchantId}|${serviceId}|${orderId}|1000|${requestDateTime}|${successUrl}|${failUrl}`;
+        const date = new Date();
+        const requestDateTime =
+            ('00' + date.getDate()).slice(-2) +
+            '-' +
+            ('00' + (date.getMonth() + 1)).slice(-2) +
+            '-' +
+            date.getFullYear() +
+            ' ' +
+            ('00' + date.getHours()).slice(-2) +
+            ':' +
+            ('00' + date.getMinutes()).slice(-2) +
+            ':' +
+            ('000' + date.getMilliseconds()).slice(-3);
+
+        const message = `${messageType}|${merchantId}|${serviceId}|${orderId}|${customerId}|${transactionAmount}|${currencyCode}|${requestDateTime}|${successUrl}|${failUrl}|${additionalField1}|${additionalField2}|${additionalField3}|${additionalField4}|${additionalField5}`;
 
         const generateCRC32Checksum = (message, secretKey) => {
             const msg = message + '|' + secretKey;
@@ -36,17 +58,23 @@ const ConfirmPayment = ({ getPayment, match, payment: { payment } }) => {
         };
 
         const checksum = generateCRC32Checksum(message, secretKey);
-        console.log(checksum);
 
         const paymentData = {
-            messageType: '0100',
-            merchantId: process.env.REACT_APP_MERCHANT_ID,
-            serviceId: process.env.REACT_APP_SERVICE_ID,
+            messageType: messageType,
+            merchantId: merchantId,
+            serviceId: serviceId,
             orderId: orderId,
-            transactionAmount: '1000',
+            customerId: customerId,
+            transactionAmount: transactionAmount,
+            currencyCode: currencyCode,
             requestDateTime: requestDateTime,
             successUrl: successUrl,
             failUrl: failUrl,
+            additionalField1: additionalField1,
+            additionalField2: additionalField2,
+            additionalField3: additionalField3,
+            additionalField4: additionalField4,
+            additionalField5: additionalField5,
             checksum: checksum,
         };
 
@@ -59,7 +87,7 @@ const ConfirmPayment = ({ getPayment, match, payment: { payment } }) => {
         };
 
         try {
-            const res = await axios.post('/api/payment', data, config);
+            const res = await axios.post('/payment/paygov', data, config);
 
             console.log(res);
         } catch (err) {

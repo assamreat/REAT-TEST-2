@@ -66,7 +66,7 @@ app.use('/api/receptionist', receptionistRoutes);
 app.use('/api/registrar', registrarRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/download', downloadRoutes);
-app.use('/api/payment', paymentRoutes);
+app.use('/payment', paymentRoutes);
 
 // Define PORT
 const PORT = process.env.PORT || 5000;

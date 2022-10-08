@@ -10,4 +10,5 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 
 console.log('nsdl key is', process.env.REACT_APP_NSDL_KEY);
+console.log('marchant ID is', process.env.REACT_APP_MERCHANT_ID);
 console.log('env is', process.env.NODE_ENV);

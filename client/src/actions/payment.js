@@ -3,7 +3,7 @@ import { GET_PAYMENT, PAYMENT_ERROR } from './types';
 
 export const getPayment = (id) => async (dispatch) => {
     try {
-        const res = await axios.get(`/api/payment/${id}`);
+        const res = await axios.get(`/payment/${id}`);
 
         dispatch({
             type: GET_PAYMENT,
